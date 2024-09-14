@@ -10,11 +10,11 @@ const bot = new TelegramBot(token, { polling: true });
 const allowedUserIds = process.env['ALLOWED_USER_IDS'].split(',');
 
 // 发送消息的功能, 加入错误处理
-export async function sendMessage(chatId, message) {
+export async function sendMessage(userId, message) {
     try {
-        await bot.sendMessage(chatId, message, { parse_mode: 'Markdown' });
+        await bot.sendMessage(userId, message, { parse_mode: 'Markdown' });
     } catch (error) {
-        console.error(`发送消息到 ${chatId} 失败:`, error); 
+        console.error(`发送消息到 ${userId} 失败:`, error); 
     }
 }
 
@@ -29,22 +29,24 @@ export function initializeBot(onMessage, onStart, onStop) {
 
     // 命令处理
     bot.on('message', async (msg) => {
-        const chatId = msg.chat.id;
+        const userId = msg.chat.id;
+        const userFirstName = msg.from.first_name;
+        const userLastName = msg.from.last_name;
         if (!('text' in msg)) {
-            return sendMessage(chatId, "本机器人只接受文本消息，请不要发送图片、表情包或其他文件类型。");
+            return sendMessage(userId, "本机器人只接受文本消息，请不要发送图片、表情包或其他文件类型。");
         }
         const text = msg.text;
 
-        if (!allowedUserIds.includes(chatId.toString())) {
-            return sendMessage(chatId, "对不起，您没有权限使用这个机器人。");
+        if (!allowedUserIds.includes(userId.toString())) {
+            return sendMessage(userId, "对不起，您没有权限使用这个机器人。");
         }
 
         switch (text) {
             case '/start':
-                onStart(chatId);
+                onStart(userId, userFirstName, userLastName);
                 break;
             case '/stop':
-                onStop(chatId);
+                onStop(userId);
                 break;
             case '/options':
                 const options = {
@@ -60,23 +62,23 @@ export function initializeBot(onMessage, onStart, onStop) {
                         ]
                     }
                 };
-                bot.sendMessage(chatId, '请选择您需要的模型：', options);
+                bot.sendMessage(userId, '请选择您需要的模型：', options);
                 break;
             default: 
                 // 过滤掉已经处理过的命令消息
                 if (text.startsWith('/')) return; 
-                onMessage(chatId, text);
+                onMessage(userId, text);
         }
     });
 
     // 监听模型选择
     bot.on('callback_query', (callbackQuery) => {
-        const chatId = callbackQuery.message.chat.id;
+        const userId = callbackQuery.message.chat.id;
         const data = callbackQuery.data;
 
         bot.answerCallbackQuery(callbackQuery.id);
-        setModelName(chatId, data);  // 设置模型名称，传递 chatId 进行历史对话清空
-        sendMessage(chatId, `模型已经切换为：${data}`);
+        setModelName(userId, data);  // 设置模型名称，传递 userId 进行历史对话清空
+        sendMessage(userId, `模型已经切换为：${data}`);
     });
 
     // 错误处理
