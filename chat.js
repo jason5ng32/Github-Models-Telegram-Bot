@@ -1,18 +1,25 @@
 import ModelClient from "@azure-rest/ai-inference";
 import { AzureKeyCredential } from "@azure/core-auth";
-import { getUserModelName, setUserModelName } from './user.js';
+import { getUserModelName, getUserTemperature, saveUserModelName, saveUserTemperature } from './user.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const token = process.env['GITHUB_TOKEN'];
 const endpoint = 'https://models.inference.ai.azure.com';
 let modelName = 'gpt-4o'; // 默认模型
+let temperature = 0.7; // 默认温度
 
 // 设置模型名称的函数
 function setModelName(userId,name) {
     modelName = name; 
-    setUserModelName(userId, name);
+    saveUserModelName(userId, name);
     resetUserHistory(userId);
+}
+
+// 设置温度的函数
+function setTemperature(userId,temp) {
+    temperature = temp; 
+    saveUserTemperature(userId, temp);
 }
 
 // 使用 Map 来保存每个用户的对话历史
@@ -49,7 +56,8 @@ async function getAIResponse(userId, userInput) {
       const response = await client.path("/chat/completions").post({
         body: {
           messages: messageHistory,
-          model: getUserModelName(userId) || modelName,
+          model: modelName,
+          temperature: temperature,
         }
       });
       if (response.status !== "200") {
@@ -65,4 +73,4 @@ async function getAIResponse(userId, userInput) {
     }
 }
 
-export { setModelName, resetUserHistory, getAIResponse };
+export { setModelName, setTemperature, resetUserHistory, getAIResponse };

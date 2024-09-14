@@ -1,24 +1,26 @@
 import { initializeBot, sendMessage } from './telegram.js';
 import { getAIResponse, resetUserHistory } from './chat.js';
-import { getUserModelName } from './user.js';
+import { getUserModelName, getUserTemperature } from './user.js';
 
+// 处理用户消息
 async function handleUserMessage(userId, message) {
     try {
-        const response = await getAIResponse(userId, message);  // 确保传入 userId
-        // 发送响应回 Telegram 用户
+        const response = await getAIResponse(userId, message);
         await sendMessage(userId, response);
     } catch (error) {
         console.error('处理用户消息时出错：', error);
-        // 发送错误消息给用户
         await sendMessage(userId, "抱歉，处理用户消息时出错。请稍后再试。");
     }
 }
 
+// 处理开始命令
 async function handleStart(userId, userFirstName, userLastName) {
     let currentModelName = getUserModelName(userId);
-    sendMessage(userId, `${userFirstName} ${userLastName} 👏 您来啦！\n我已经准备好为你提供帮助！\n当前选择的大模型是：${currentModelName}`);
+    let currentTemperature = getUserTemperature(userId);
+    sendMessage(userId, `👏👏👏\n${userFirstName} ${userLastName} 您来啦！\n我已经准备好为你提供帮助！\n当前选择的大模型是：${currentModelName}，温度是${currentTemperature}。`);
 }
 
+// 处理停止命令
 async function handleStop(userId) {
     sendMessage(userId, "已经清空本轮对话，你可以重新开始新一轮对话。");
     resetUserHistory(userId);  // 清空该用户的对话历史
@@ -26,7 +28,7 @@ async function handleStop(userId) {
 
 async function main() {
     try {
-        // 初始化 Telegram 机器人，处理收到的消息
+        // 初始化 Telegram 机器人
         initializeBot(handleUserMessage, handleStart, handleStop);
     } catch (error) {
         console.error('初始化机器人时出错:', error);
