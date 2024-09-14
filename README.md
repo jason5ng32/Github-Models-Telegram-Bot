@@ -21,7 +21,7 @@ cp .env.example .env
 直接运行：
 
 ```bash
-node start
+npm start
 ```
 
 或者通过 pm2 运行：
