@@ -57,8 +57,9 @@ export function initializeBot(onMessage, onStart, onStop) {
                             [{ text: 'Meta LLaMa 3.1 405b', callback_data: 'meta-llama-3.1-405b-instruct' }],
                             [{ text: 'Meta LLaMa 3.1 70b', callback_data: 'meta-llama-3.1-70b-instruct' }],
                             [{ text: 'Phi 3', callback_data: 'Phi-3-medium-128k-instruct' }],
-                            [{ text: 'AI21 Jamba', callback_data: 'ai21-jamba-1.5-large' }],
-                            [{ text: 'Mistral', callback_data: 'Mistral-large' }],
+                            [{ text: 'AI21 Jamba 1.5', callback_data: 'ai21-jamba-1.5-large' }],
+                            [{ text: 'Mistral Large', callback_data: 'Mistral-large' }],
+                            [{ text: 'Cohere Command R+', callback_data: 'cohere-command-r-plus' }]
                         ]
                     }
                 };
