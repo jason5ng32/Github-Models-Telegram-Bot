@@ -22,9 +22,9 @@ cp .env.example .env
 
 根据里面的字段，自己填一下。字段说明如下：
 
-> `TELEGRAM_TOKEN`：Telegram 机器人的 token，如果不知道怎么弄，自己 Google 一下。
-> `GITHUB_TOKEN`：你的 Github token，可以在设置里生成。
-> `ALLOWED_USER_IDS`：允许使用机器人的 Telegram 用户 ID （不是用户名） 列表，多个用 ``,`` 隔开。如果不知道怎样查看自己的 ID，自己 Google 一下。
+> * `TELEGRAM_TOKEN`：Telegram 机器人的 token，如果不知道怎么弄，自己 Google 一下。
+> * `GITHUB_TOKEN`：你的 Github token，可以在设置里生成。
+> * `ALLOWED_USER_IDS`：允许使用机器人的 Telegram 用户 ID （不是用户名） 列表，多个用 ``,`` 隔开。如果不知道怎样查看自己的 ID，自己 Google 一下。
 
 配置完之后，就可以运行了：
 
