@@ -49,7 +49,6 @@ async function getAIResponse(userId, userInput) {
   const client = new ModelClient(endpoint, new AzureKeyCredential(token));
   // 更新用户消息到对话历史
   updateMessageHistory(userId, 'user', userInput);
-
   const messageHistory = getUserHistory(userId);
 
   try {
@@ -61,13 +60,13 @@ async function getAIResponse(userId, userInput) {
       }
     });
     if (response.status !== "200") {
-      throw response.body.error;
+      throw new Error(response.body.error.message);
     }
 
-    for (const choice of response.body.choices) {
-      updateMessageHistory(userId, 'assistant', choice.message.content);
-      return choice.message.content
-    }
+    const content = response.body.choices[0].message.content;
+    updateMessageHistory(userId, 'assistant', content);
+    return content;
+
   } catch (error) {
     console.error('无法获取响应:', error);
     return '我目前无法处理你的请求，因为遇到了错误：' + error.message;
